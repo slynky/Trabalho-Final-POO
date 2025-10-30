@@ -16,7 +16,7 @@ import org.teiacoltec.poo.tpf.util.Criptografar;
 public class AlunoDAO {
     private static final DateTimeFormatter FORMATADOR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public void inserir(Aluno aluno) throws SQLException {
+    public static void inserir(Aluno aluno) throws SQLException {
         String sqlPessoa = "INSERT INTO Pessoa (cpf, nome, nascimento, email, endereco, senha, tipo_pessoa) " +
                 "VALUES (?, ?, ?, ?, ?, ?, 'ALUNO')";
 
@@ -53,7 +53,7 @@ public class AlunoDAO {
         }
     }
 
-    public Optional<Aluno> buscarPorCpf(String cpf, String senha) throws SQLException {
+    public static Optional<Aluno> buscarPorCpf(String cpf, String senha) throws SQLException {
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "a.matricula, a.curso " +
                 "FROM Pessoa p " +
@@ -89,7 +89,7 @@ public class AlunoDAO {
         return Optional.empty();
     }
 
-    public List<Aluno> listarTodos() throws SQLException {
+    public static List<Aluno> listarTodos() throws SQLException {
         List<Aluno> alunos = new ArrayList<>();
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "a.matricula, a.curso " +

@@ -16,7 +16,7 @@ public class ProfessorDAO {
 
     private static final DateTimeFormatter FORMATADOR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public void inserir(Professor professor) throws SQLException {
+    public static void inserir(Professor professor) throws SQLException {
 
         String sqlPessoa = "INSERT INTO Pessoa (cpf, nome, nascimento, email, endereco, senha, tipo_pessoa) " +
                 "VALUES (?, ?, ?, ?, ?, ?, 'PROFESSOR')";
@@ -54,7 +54,7 @@ public class ProfessorDAO {
         }
     }
 
-    public Optional<Professor> buscarPorCpf(String cpf) throws SQLException {
+    public static Optional<Professor> buscarPorCpf(String cpf) throws SQLException {
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "pr.matricula, pr.formacao " +
                 "FROM Pessoa p " +
@@ -87,7 +87,7 @@ public class ProfessorDAO {
         return Optional.empty();
     }
 
-    public List<Professor> listarTodos() throws SQLException {
+    public static List<Professor> listarTodos() throws SQLException {
         List<Professor> professores = new ArrayList<>();
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "pr.matricula, pr.formacao " +

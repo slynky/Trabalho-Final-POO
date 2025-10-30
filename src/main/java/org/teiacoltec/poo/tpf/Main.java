@@ -1,6 +1,7 @@
 package org.teiacoltec.poo.tpf;
 
 
+import org.teiacoltec.poo.tpf.conexao.dao.AlunoDAO;
 import org.teiacoltec.poo.tpf.exceptions.CredenciaisInvalidasException;
 import org.teiacoltec.poo.tpf.escolares.instituicoesEscolares.Turma;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Aluno;
@@ -25,7 +26,6 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         boolean executarSistema = true;
-
         while (executarSistema) {
             // A cópia dos dados é feita a cada ciclo de login para garantir que as alterações
             // de uma sessão possam ser salvas ou descartadas.

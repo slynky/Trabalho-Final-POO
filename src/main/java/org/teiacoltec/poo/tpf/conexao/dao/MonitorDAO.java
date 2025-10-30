@@ -17,7 +17,7 @@ public class MonitorDAO {
     private static final DateTimeFormatter FORMATADOR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 
-    public void inserir(Monitor monitor) throws SQLException {
+    public static void inserir(Monitor monitor) throws SQLException {
         String sqlPessoa = "INSERT INTO Pessoa (cpf, nome, nascimento, email, endereco, senha, tipo_pessoa) " +
                 "VALUES (?, ?, ?, ?, ?, ?, 'MONITOR')";
 
@@ -53,7 +53,7 @@ public class MonitorDAO {
         }
     }
 
-    public Optional<Monitor> buscarPorCpf(String cpf, String senha) throws SQLException {
+    public static Optional<Monitor> buscarPorCpf(String cpf, String senha) throws SQLException {
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "m.matricula, m.curso " +
                 "FROM Pessoa p " +
@@ -89,7 +89,7 @@ public class MonitorDAO {
         return Optional.empty();
     }
 
-    public List<Monitor> listarTodos() throws SQLException {
+    public static List<Monitor> listarTodos() throws SQLException {
         List<Monitor> monitores = new ArrayList<>();
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "m.matricula, m.curso " +

@@ -30,7 +30,6 @@ public class Criptografar {
             return hashtext;
         } catch (NoSuchAlgorithmException e) {
             // This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-            // For a critical algorithm like MD5, it's better to wrap it in a RuntimeException.
             throw new RuntimeException(e);
         }
     }

@@ -1,7 +1,6 @@
-import org.teiacoltec.poo.tpf.conexao.conexaoBD;
+import org.teiacoltec.poo.tpf.conexao.ConexaoBD;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -11,7 +10,7 @@ public class TesteConexao {
 
     public static void main(String[] args) {
 
-        try (Connection conn = conexaoBD.getConnection()) {
+        try (Connection conn = ConexaoBD.getConnection()) {
 
             System.out.println("Conexão com o banco de dados Docker bem-sucedida!");
 

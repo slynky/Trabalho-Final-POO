@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class conexaoBD {
+public class ConexaoBD {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/sistema_escolar";
     private static final String DB_USER = "root";
     private static final String DB_PASS = "123"; // Sua senha do .env

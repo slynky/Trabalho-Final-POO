@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:latest
@@ -12,3 +10,7 @@ services:
 
     ports:
       - "3306:3306"
+
+    volumes:
+      # Mapeia o script de inicialização
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

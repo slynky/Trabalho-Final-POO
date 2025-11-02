@@ -118,4 +118,21 @@ public class MonitorDAO {
         }
         return monitores;
     }
+
+    public static void atualizarEndereco(String cpf, String novoEndereco) throws SQLException {
+        String sql = "UPDATE Pessoa SET endereco = ? WHERE cpf = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, novoEndereco);
+            stmt.setString(2, cpf);
+
+            int linhasAfetadas = stmt.executeUpdate();
+
+            if (linhasAfetadas == 0) {
+                throw new SQLException("Nenhum aluno com o CPF informado foi encontrado.");
+            }
+        }
+    }
 }

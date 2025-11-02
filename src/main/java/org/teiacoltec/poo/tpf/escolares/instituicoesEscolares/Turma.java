@@ -36,7 +36,7 @@ public class Turma {
     private static final DateTimeFormatter FORMATADOR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // --- Construtores ---
-    public Turma(int id, String nome, String desc, String dataInicio, String dataFim, Pessoa[] participantesIniciais, Turma turmaPai) {
+    public Turma(int id, String nome, String desc, String dataInicio, String dataFim, ArrayList<Pessoa> participantesIniciais, Turma turmaPai) {
         this.id = id;
         this.nome = nome;
         this.desc = desc;
@@ -47,7 +47,7 @@ public class Turma {
             this.turmaPai.associaSubturma(this);
         }
         if (participantesIniciais != null) {
-            this.participantes.addAll(Arrays.asList(participantesIniciais));
+            this.participantes = participantesIniciais;
         }
     }
 

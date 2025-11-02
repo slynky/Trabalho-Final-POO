@@ -3,16 +3,10 @@ package org.teiacoltec.poo.tpf.conexao.dao;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import org.teiacoltec.poo.tpf.conexao.ConexaoBD;
-import org.teiacoltec.poo.tpf.escolares.Atividade;
-import org.teiacoltec.poo.tpf.conexao.dao.AtividadeDAO;
-import org.teiacoltec.poo.tpf.escolares.Tarefa;
 import org.teiacoltec.poo.tpf.escolares.instituicoesEscolares.Turma;
-import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Professor;
-import org.teiacoltec.poo.tpf.util.Criptografar;
+import org.teiacoltec.poo.tpf.pessoa.Pessoa;
 
 public class TurmaDAO {
 
@@ -54,7 +48,7 @@ public class TurmaDAO {
     public static Optional<Turma> obterTurmaPorId(int id) throws SQLException {
 
         String sqlTurma = "SELECT * FROM Turmas WHERE id = ?";
-        String sqlParticipantes = "SELECT cpf_pessoa FROM Turma_Participantes WHERE id_turma = ?";
+        String sqlParticipantes = "SELECT tp.cpf_pessoa, p.senha FROM Turma_Participantes tp JOIN Pessoa p ON p.cpf = tp.cpf_pessoa WHERE id_turma = ?";
         try (Connection conn = ConexaoBD.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sqlTurma);
         PreparedStatement stmt2 = conn.prepareStatement(sqlParticipantes)) {
@@ -63,26 +57,36 @@ public class TurmaDAO {
             try (ResultSet rs = stmt.executeQuery();
             ResultSet rs2 = stmt2.executeQuery()) {
                 if (rs.next()) {
+                    ArrayList<Pessoa> participantes = new ArrayList<>();
                     String dataInicio = rs.getDate("data_inicio").toLocalDate().format(FORMATADOR);
                     String dataFim = rs.getDate("data_fim").toLocalDate().format(FORMATADOR);
 
                     if (rs2.next()) {
-                        Array sqlArray = rs2.getArray("cpf_pessoa");
+                        Array sqlArrayCpf = rs2.getArray("cpf_pessoa");
+                        Array sqlArraySenha = rs2.getArray("senha");
 
                         String[] cpfArray = null;
-
-                        if (sqlArray != null) {
+                        String[] senhaArray = null;
+                        if (sqlArraySenha != null) {
                             try {
-                                cpfArray = (String[]) sqlArray.getArray();
+                                senhaArray = (String[]) sqlArraySenha.getArray();
                             } finally {
-                                sqlArray.free();
+                                sqlArraySenha.free();
+                            }
+                        }
+                        if (sqlArrayCpf != null) {
+                            try {
+                                cpfArray = (String[]) sqlArrayCpf.getArray();
+                            } finally {
+                                sqlArrayCpf.free();
                             }
                         }
 
-                        if (cpfArray != null) {
-                            Arrays.stream(cpfArray).forEach(cpf -> {
+                        if (cpfArray != null && senhaArray != null) {
 
-                            });
+                            for (int i = 0; i < cpfArray.length; i++) {
+                                PessoaDAO.buscarPessoaPorCpf(cpfArray[i], senhaArray[i]).ifPresent(participantes::add);
+                            }
                         }
                     }
 
@@ -92,8 +96,8 @@ public class TurmaDAO {
                             rs.getString("descricao"),
                             dataInicio,
                             dataFim,
-                            null,
-
+                            participantes,
+                            null
                             );
 
                     return Optional.of(turma);

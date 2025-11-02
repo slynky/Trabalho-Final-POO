@@ -145,7 +145,7 @@ public class Main {
         Aluno a1 = new Aluno("111.222.333-44", "Beatriz Costa", "20/03/2005", "bia.costa@email.com", "Av. Principal, 456", "A001", "Ciência da Computação", "1");
         Monitor m1 = new Monitor("444.555.666-77", "Lucas Martins", "28/05/1999", "lucas.m@email.com", "Travessa dos Sonhos, 78", "M001", "Ciência da Computação", "1");
 
-        Turma turmaPrincipal = new Turma(1, "Desenvolvimento de Software 2025", "POO e Java", "01/08/2025", "15/12/2025", new Pessoa[]{a1}, null);
+        Turma turmaPrincipal = new Turma(1, "Desenvolvimento de Software 2025", "POO e Java", "01/08/2025", "15/12/2025", null, null);
         turmaPrincipal.adicionarParticipante(p1);
         turmaPrincipal.adicionarParticipante(m1);
 

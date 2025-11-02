@@ -22,50 +22,24 @@ public class PessoaDAO {
 
             try (PreparedStatement stmtPessoa = conn.prepareStatement(sqlPessoa)) {
 
-                if (pessoa instanceof Professor) {
-                    Professor professor = (Professor) pessoa;
-
-                    stmtPessoa.setString(1, professor.getCpf());
-                    stmtPessoa.setString(2, professor.getNome());
-                    stmtPessoa.setDate(3, Date.valueOf(professor.getNascimento()));
-                    stmtPessoa.setString(4, professor.getEmail());
-                    stmtPessoa.setString(5, professor.getEndereco());
-                    stmtPessoa.setString(6, professor.getSenha());
-                    stmtPessoa.setString(7, "PROFESSOR");
-
-                    stmtPessoa.executeUpdate();
-                    ProfessorDAO.inserirEspecifico(conn, professor);
-
-                } else if (pessoa instanceof Aluno) {
-                    Aluno aluno = (Aluno) pessoa;
-
-                    stmtPessoa.setString(1, aluno.getCpf());
-                    stmtPessoa.setString(2, aluno.getNome());
-                    stmtPessoa.setDate(3, Date.valueOf(aluno.getNascimento()));
-                    stmtPessoa.setString(4, aluno.getEmail());
-                    stmtPessoa.setString(5, aluno.getEndereco());
-                    stmtPessoa.setString(6, aluno.getSenha());
+                stmtPessoa.setString(1, pessoa.getCpf());
+                stmtPessoa.setString(2, pessoa.getNome());
+                stmtPessoa.setDate(3, Date.valueOf(pessoa.getNascimento()));
+                stmtPessoa.setString(4, pessoa.getEmail());
+                stmtPessoa.setString(5, pessoa.getEndereco());
+                stmtPessoa.setString(6, pessoa.getSenha());
+                if (pessoa instanceof Aluno) {
                     stmtPessoa.setString(7, "ALUNO");
-
                     stmtPessoa.executeUpdate();
-                    AlunoDAO.inserirEspecifico(conn, aluno);
-
+                    AlunoDAO.inserirEspecifico(conn, (Aluno) pessoa);
+                } else if (pessoa instanceof Professor) {
+                    stmtPessoa.setString(7, "PROFESSOR");
+                    stmtPessoa.executeUpdate();
+                    ProfessorDAO.inserirEspecifico(conn, (Professor) pessoa);
                 } else if (pessoa instanceof Monitor) {
-                    Monitor monitor = (Monitor) pessoa;
-
-                    stmtPessoa.setString(1, monitor.getCpf());
-                    stmtPessoa.setString(2, monitor.getNome());
-                    stmtPessoa.setDate(3, Date.valueOf(monitor.getNascimento()));
-                    stmtPessoa.setString(4, monitor.getEmail());
-                    stmtPessoa.setString(5, monitor.getEndereco());
-                    stmtPessoa.setString(6, monitor.getSenha());
                     stmtPessoa.setString(7, "MONITOR");
-
                     stmtPessoa.executeUpdate();
-                    MonitorDAO.inserirEspecifico(conn, monitor);
-
-                } else {
-                    throw new SQLException("Tipo de pessoa não suportado para inserção.");
+                    MonitorDAO.inserirEspecifico(conn, (Monitor) pessoa);
                 }
 
                 conn.commit();

@@ -1,7 +1,11 @@
 package org.teiacoltec.poo.tpf;
 
 
-import org.teiacoltec.poo.tpf.conexao.dao.AlunoDAO;
+import org.teiacoltec.poo.tpf.conexao.dao.AtividadeDAO;
+import org.teiacoltec.poo.tpf.conexao.dao.TarefaDAO;
+import org.teiacoltec.poo.tpf.conexao.dao.TurmaDAO;
+import org.teiacoltec.poo.tpf.escolares.Atividade;
+import org.teiacoltec.poo.tpf.escolares.Tarefa;
 import org.teiacoltec.poo.tpf.exceptions.CredenciaisInvalidasException;
 import org.teiacoltec.poo.tpf.escolares.instituicoesEscolares.Turma;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Aluno;
@@ -13,19 +17,47 @@ import org.teiacoltec.poo.tpf.menus.MenuProfessorLogado;
 import org.teiacoltec.poo.tpf.pessoa.Pessoa;
 import org.teiacoltec.poo.tpf.util.Autenticacao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Main {
 
+    private static List<Atividade> atividades = new  ArrayList<>();
     private static List<Turma> turmas = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static Atividade retornarAtividade(int idAtividade)  {
+        try {
+
+
+           for(Atividade atividade : atividades) {
+               if(atividade.getId() == idAtividade) { return atividade; }
+           }
+        }catch (Exception e) {
+            System.err.println("Nenhuma atividade com esse ID foi encontrada");
+        }
+
+        return null;
+    }
+
+
+
+    public static void main(String[] args) throws SQLException {
+
+        Atividade neiss = new Atividade(1, "Dever de matematica", "Fazer a pagina indicada", "12/07/2024", "13/07/2024", 21);
+        AtividadeDAO.insetirAtividade(neiss);
+        Atividade teste = AtividadeDAO.buscarPorId(1).get();
+        System.out.println(teste.getNome());
+        Turma turmaBoa = new Turma(1, "Turma boa", "Uma turma deveras boa", "01/01/2001", "01/01/2002", null, null);
+        TurmaDAO.inserirTurma(turmaBoa);
+        Tarefa tarefaTeste = new Tarefa(1, "Fazer uns negocio ai", turmaBoa, neiss, 12.4F);
+        TarefaDAO.inserirTarefa(tarefaTeste);
 
         Scanner scanner = new Scanner(System.in);
-        boolean executarSistema = true;
+        boolean executarSistema = false;
         while (executarSistema) {
             // A cópia dos dados é feita a cada ciclo de login para garantir que as alterações
             // de uma sessão possam ser salvas ou descartadas.
@@ -85,6 +117,8 @@ public class Main {
             }
         }
         System.out.println(">>> Programa encerrado.");
+
+
     }
 
     /**

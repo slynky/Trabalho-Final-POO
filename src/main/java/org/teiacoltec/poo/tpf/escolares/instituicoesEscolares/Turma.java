@@ -73,6 +73,10 @@ public class Turma {
 
 
     // --- Getters e Setters  ---
+
+    //colocar get pras datas
+    public String getInicio() { return String.valueOf(inicio); }
+    public String getFim() { return String.valueOf(fim); }
     public int getId() { return this.id; }
     public String getNome() { return this.nome; }
     public List<Professor> getProfessoresResponsaveis() {

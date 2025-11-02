@@ -3,6 +3,8 @@ package org.teiacoltec.poo.tpf.escolares;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+
+
 public class Atividade{
 
     private final int id;
@@ -49,6 +51,7 @@ public class Atividade{
     public void setFim(LocalDate fim) {this.fim = fim;}
     public void setValor(float valor) {this.valor = valor;}
 
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -60,5 +63,8 @@ public class Atividade{
         sb.append("Valor: ").append(valor).append("\n");
         return sb.toString();
     }
+
+
+
 
 }

@@ -25,8 +25,13 @@ public class Tarefa{
    public void setNota(float nota) {
         this.nota = nota;
     }
+
    public int getId() {return id;}
    public String getNome() {return nome;}
+    public float getNota() {return nota;}
+
+    public int getTurmaId() {return turma.getId();}
+    public int getAtividadeId() {return atividade.getId();}
 
     public Tarefa(Tarefa outra) {
        this.id = outra.id;

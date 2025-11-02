@@ -1,12 +1,9 @@
 package org.teiacoltec.poo.tpf.conexao.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.teiacoltec.poo.tpf.conexao.ConexaoBD;
@@ -57,13 +54,37 @@ public class TurmaDAO {
     public static Optional<Turma> obterTurmaPorId(int id) throws SQLException {
 
         String sqlTurma = "SELECT * FROM Turmas WHERE id = ?";
+        String sqlParticipantes = "SELECT cpf_pessoa FROM Turma_Participantes WHERE id_turma = ?";
         try (Connection conn = ConexaoBD.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sqlTurma)) {
+        PreparedStatement stmt = conn.prepareStatement(sqlTurma);
+        PreparedStatement stmt2 = conn.prepareStatement(sqlParticipantes)) {
             stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
+
+            try (ResultSet rs = stmt.executeQuery();
+            ResultSet rs2 = stmt2.executeQuery()) {
                 if (rs.next()) {
                     String dataInicio = rs.getDate("data_inicio").toLocalDate().format(FORMATADOR);
                     String dataFim = rs.getDate("data_fim").toLocalDate().format(FORMATADOR);
+
+                    if (rs2.next()) {
+                        Array sqlArray = rs2.getArray("cpf_pessoa");
+
+                        String[] cpfArray = null;
+
+                        if (sqlArray != null) {
+                            try {
+                                cpfArray = (String[]) sqlArray.getArray();
+                            } finally {
+                                sqlArray.free();
+                            }
+                        }
+
+                        if (cpfArray != null) {
+                            Arrays.stream(cpfArray).forEach(cpf -> {
+
+                            });
+                        }
+                    }
 
                     Turma turma = new Turma(
                             rs.getInt("id"),
@@ -72,8 +93,9 @@ public class TurmaDAO {
                             dataInicio,
                             dataFim,
                             null,
-                           // rs.getInt("id_turma_pai"));
-                            null);
+
+                            );
+
                     return Optional.of(turma);
                 }
                 return Optional.empty();

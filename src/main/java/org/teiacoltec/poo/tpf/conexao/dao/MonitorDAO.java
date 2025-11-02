@@ -118,4 +118,29 @@ public class MonitorDAO {
         }
         return monitores;
     }
+
+    public static void atualizarEndereco(String cpf, String novoEndereco, String senha) throws SQLException {
+        // Criptografa a senha fornecida para comparação no banco
+        senha = Criptografar.hashSenhaMD5(senha);
+
+        String sql = "UPDATE Pessoa SET endereco = ? WHERE cpf = ? AND senha = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, novoEndereco);
+            stmt.setString(2, cpf);
+            stmt.setString(3, senha);
+
+            int linhasAfetadas = stmt.executeUpdate();
+
+            // Se nenhuma linha foi atualizada, e assumindo que o CPF existe, a senha estava incorreta.
+            if (linhasAfetadas == 0) {
+                // Lança uma exceção informando o erro específico.
+                throw new SQLException("Senha incorreta. O endereço não foi atualizado.");
+            }
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
 }

@@ -89,6 +89,11 @@ public class TurmaDAO {
                             }
                         }
                     }
+                    int idTurmaPai = rs.getInt("id_turma_pai");
+                    idTurmaPai = rs.wasNull() ? -1 : idTurmaPai;
+
+                    Turma tPai = idTurmaPai != -1 ? TurmaDAO.obterTurmaPorId(idTurmaPai).get() : null;
+
 
                     Turma turma = new Turma(
                             rs.getInt("id"),
@@ -97,7 +102,7 @@ public class TurmaDAO {
                             dataInicio,
                             dataFim,
                             participantes,
-                            null
+                            tPai
                             );
 
                     return Optional.of(turma);

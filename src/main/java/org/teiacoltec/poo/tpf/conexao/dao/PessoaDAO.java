@@ -68,8 +68,7 @@ public class PessoaDAO {
                             return AlunoDAO.buscarPorCpf(cpf, senha).map(a -> (Pessoa)a);
 
                         case "PROFESSOR":
-                            return ProfessorDAO.buscarPorCpf(cpf).map(p -> (Pessoa)p);
-
+                            return ProfessorDAO.buscarPorCpf(cpf, senha).map(p -> (Pessoa)p);
                         case "MONITOR":
                             return MonitorDAO.buscarPorCpf(cpf, senha).map(m -> (Pessoa)m);
                     }
@@ -99,4 +98,75 @@ public class PessoaDAO {
             throw e;
         }
     }
-}
+
+    public static void removerPessoa(String cpf) throws SQLException {
+
+        String sqlTipo = "SELECT tipo_pessoa FROM Pessoa WHERE cpf = ?";
+        String sqlPessoa = "DELETE FROM Pessoa WHERE cpf = ?";
+
+        Connection conn = null;
+
+        try {
+            conn = ConexaoBD.getConnection();
+            conn.setAutoCommit(false);
+
+            String tipoPessoa = null;
+
+            try (PreparedStatement stmtTipo = conn.prepareStatement(sqlTipo)) {
+                stmtTipo.setString(1, cpf);
+                try (ResultSet rs = stmtTipo.executeQuery()) {
+                    if (rs.next()) {
+                        tipoPessoa = rs.getString("tipo_pessoa");
+                    } else {
+                        throw new SQLException("Pessoa com CPF " + cpf + " não encontrada.");
+                    }
+                }
+            }
+
+            if (tipoPessoa != null) {
+                switch (tipoPessoa) {
+                    case "ALUNO":
+                        AlunoDAO.removerAluno(cpf, conn);
+                        break;
+                    case "PROFESSOR":
+                        ProfessorDAO.removerProfessor(cpf, conn);
+                        break;
+                    case "MONITOR":
+                        MonitorDAO.removerMonitor(cpf, conn);
+                        break;
+                    default:
+                        throw new SQLException("Tipo de pessoa desconhecido: " + tipoPessoa);
+                }
+            }
+
+            try (PreparedStatement stmtPessoa = conn.prepareStatement(sqlPessoa)) {
+                stmtPessoa.setString(1, cpf);
+                int linhasAfetadas = stmtPessoa.executeUpdate();
+                if (linhasAfetadas == 0) {
+                    throw new SQLException("Falha ao deletar a Pessoa, CPF pode não existir mais.");
+                }
+            }
+
+            conn.commit();
+
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    // Logar o erro de rollback, se necessário
+                }
+            }
+            throw new SQLException("Erro ao remover pessoa: " + e.getMessage(), e);
+
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    // Logar o erro de fechamento, se necessário
+                }
+            }
+        }
+    }}

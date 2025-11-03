@@ -59,13 +59,19 @@ public class TarefaDAO {
 
             try (ResultSet rs = stmt.executeQuery()){
                 if(rs.next()){
-                    int idParaConstrutor  = rs.getInt("id");
-                    String nomeParaConstrutor = rs.getString("nome");
-                    int turmaIdParaConstrutor = rs.getInt("turmaId");
-                    int atividadeIdParaConstrutor = rs.getInt("atividadeId");
-                    float notaParaConstrutor = rs.getFloat("nota");
-                    Turma turma = TurmaDAO.obterTurmaPorId(turmaIdParaConstrutor).get();
-                    Atividade atividade = AtividadeDAO.buscarPorId(atividadeIdParaConstrutor).get();
+                    int turmaIdParaConstrutor = rs.getInt("id_turma");
+                    int atividadeIdParaConstrutor = rs.getInt("id_atividade");
+
+                    Optional<Turma> optTurma = TurmaDAO.obterTurmaPorId(turmaIdParaConstrutor);
+                    Optional<Atividade> optAtividade = AtividadeDAO.buscarPorId(atividadeIdParaConstrutor);
+
+                    if (optTurma.isEmpty() || optAtividade.isEmpty()) {
+                        return Optional.empty();
+                    }
+
+                    Turma turma = optTurma.get();
+                    Atividade atividade = optAtividade.get();
+
                     Tarefa tarefa = new Tarefa(
                             rs.getInt("id"),
                             rs.getString("nome"),
@@ -75,10 +81,19 @@ public class TarefaDAO {
                     );
                     return Optional.of(tarefa);
                 }
-                return null;
+                return Optional.empty();
             }
         }
     }
 
+    public static void removerTarefa(int id) throws SQLException {
+        String sqlTarefa = "DELETE FROM Tarefa WHERE id = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+        PreparedStatement stmtTarefa = conn.prepareStatement(sqlTarefa)){
+            stmtTarefa.setInt(1, id);
+            stmtTarefa.executeUpdate();
+        }
+    }
 
 }

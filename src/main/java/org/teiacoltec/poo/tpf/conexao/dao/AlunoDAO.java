@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.teiacoltec.poo.tpf.conexao.ConexaoBD;
+import org.teiacoltec.poo.tpf.escolares.Tarefa;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Aluno;
 import org.teiacoltec.poo.tpf.util.Criptografar;
 
@@ -94,5 +95,25 @@ public class AlunoDAO {
             }
         }
         return alunos;
+    }
+
+    public static void removerAluno(String cpf,Connection conn) throws SQLException {
+        String sqlAluno = "DELETE FROM Aluno WHERE cpf = ?";
+        try (PreparedStatement stmtAluno = conn.prepareStatement(sqlAluno)) {
+            stmtAluno.setString(1, cpf);
+            stmtAluno.executeUpdate();
+        }
+    }
+
+    public static void completarTarefa(String cpf, Tarefa t, float notaAluno) throws SQLException{
+        String sql = "INSERT INTO Nota_Aluno (id_tarefa, cpf, nota) VALUES (?, ?, ?)";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, t.getId());
+            stmt.setString(2, cpf);
+            stmt.setDouble(3, notaAluno);
+            stmt.executeUpdate();
+        }
     }
 }

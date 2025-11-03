@@ -98,4 +98,12 @@ public class MonitorDAO {
         }
         return monitores;
     }
+
+    public static void removerMonitor(String cpf,Connection conn) throws SQLException {
+        String sqlMonitor = "DELETE FROM Monitor WHERE cpf = ?";
+        try (PreparedStatement stmtMonitor = conn.prepareStatement(sqlMonitor)) {
+            stmtMonitor.setString(1, cpf);
+            stmtMonitor.executeUpdate();
+        }
+    }
 }

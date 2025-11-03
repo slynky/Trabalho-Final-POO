@@ -70,6 +70,15 @@ public class AtividadeDAO {
         return Optional.empty();
     }
 
+    public static void removerAtividade(int id) throws SQLException {
+        String sqlAtividade = "DELETE FROM Atividade WHERE id = ?";
 
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmtAtividade = conn.prepareStatement(sqlAtividade)) {
+
+            stmtAtividade.setInt(1, id);
+            stmtAtividade.executeUpdate();
+        }
+    }
 
 }

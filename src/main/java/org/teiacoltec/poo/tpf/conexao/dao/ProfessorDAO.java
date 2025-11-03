@@ -27,18 +27,17 @@ public class ProfessorDAO {
         }
     }
 
-    public static Optional<Professor> buscarPorCpf(String cpf) throws SQLException {
-        String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
-                "pr.matricula, pr.formacao " +
+    public static Optional<Professor> buscarPorCpf(String cpf, String senha) throws SQLException {
+        String sql = "SELECT p.cpf, p.nome, ... " +
                 "FROM Pessoa p " +
                 "JOIN Professor pr ON p.cpf = pr.cpf " +
-                "WHERE p.cpf = ?";
+                "WHERE p.cpf = ? AND p.tipo_pessoa = 'PROFESSOR' AND p.senha = ?";
 
         try (Connection conn = ConexaoBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cpf);
-
+            stmt.setString(2, senha);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     String dataNasc = rs.getDate("nascimento").toLocalDate().format(FORMATADOR);
@@ -94,5 +93,13 @@ public class ProfessorDAO {
             }
         }
         return professores;
+    }
+
+    public static void removerProfessor(String cpf,Connection conn) throws SQLException {
+        String sqlProfessor = "DELETE FROM Professor WHERE cpf = ?";
+        try (PreparedStatement stmtProfessor = conn.prepareStatement(sqlProfessor)) {
+            stmtProfessor.setString(1, cpf);
+            stmtProfessor.executeUpdate();
+        }
     }
 }

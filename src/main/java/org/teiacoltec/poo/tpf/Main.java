@@ -20,7 +20,6 @@ import org.teiacoltec.poo.tpf.util.Autenticacao;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
 
         Atividade neiss = new Atividade(1, "Dever de matematica", "Fazer a pagina indicada", "12/07/2024", "13/07/2024", 21);
-        AtividadeDAO.insetirAtividade(neiss);
+        AtividadeDAO.inserirAtividade(neiss);
         Atividade teste = AtividadeDAO.buscarPorId(1).get();
         System.out.println(teste.getNome());
         Turma turmaBoa = new Turma(1, "Turma boa", "Uma turma deveras boa", "01/01/2001", "01/01/2002", null, null);

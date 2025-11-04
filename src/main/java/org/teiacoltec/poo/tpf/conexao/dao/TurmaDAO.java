@@ -111,7 +111,7 @@ public class TurmaDAO {
 
     public static Optional<Turma> obterTurmaPorId(int id) throws SQLException {
 
-        String sqlTurma = "SELECT * FROM Turmas WHERE id = ?";
+        String sqlTurma = "SELECT * FROM Turma WHERE id = ?";
         String sqlParticipantes = "SELECT tp.cpf_pessoa, p.senha FROM Turma_Participantes tp JOIN Pessoa p ON p.cpf = tp.cpf_pessoa WHERE tp.id_turma = ?";
 
         try (Connection conn = ConexaoBD.getConnection();

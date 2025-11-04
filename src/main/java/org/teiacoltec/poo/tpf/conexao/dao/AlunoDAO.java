@@ -106,7 +106,7 @@ public class AlunoDAO {
     }
 
     public static void completarTarefa(String cpf, Tarefa t, float notaAluno) throws SQLException{
-        String sql = "INSERT INTO Nota_Aluno (id_tarefa, cpf, nota) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Nota_Aluno (id_tarefa, cpf_aluno, nota_obtida) VALUES (?, ?, ?)";
 
         try (Connection conn = ConexaoBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

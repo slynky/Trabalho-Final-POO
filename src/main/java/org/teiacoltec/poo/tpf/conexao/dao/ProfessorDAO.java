@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import org.teiacoltec.poo.tpf.conexao.ConexaoBD;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Professor;
+import org.teiacoltec.poo.tpf.util.Criptografar;
 
 public class ProfessorDAO {
 
@@ -28,14 +29,15 @@ public class ProfessorDAO {
     }
 
     public static Optional<Professor> buscarPorCpf(String cpf, String senha) throws SQLException {
-        String sql = "SELECT p.cpf, p.nome, ... " +
+        String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
+                "pr.matricula, pr.formacao " +
                 "FROM Pessoa p " +
                 "JOIN Professor pr ON p.cpf = pr.cpf " +
                 "WHERE p.cpf = ? AND p.tipo_pessoa = 'PROFESSOR' AND p.senha = ?";
 
         try (Connection conn = ConexaoBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            senha = Criptografar.hashSenhaMD5(senha);
             stmt.setString(1, cpf);
             stmt.setString(2, senha);
             try (ResultSet rs = stmt.executeQuery()) {

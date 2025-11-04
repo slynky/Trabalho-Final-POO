@@ -86,7 +86,7 @@ CREATE TABLE Turma_Participantes (
 );
 
 CREATE TABLE Nota_Aluno (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     id_tarefa INT NOT NULL,
     cpf_aluno VARCHAR(11) NOT NULL,
     nota_obtida DECIMAL(5, 2) NOT NULL,

@@ -25,6 +25,8 @@ public class ProfessorDAO {
             stmtProfessor.setString(2, professor.getMatricula());
             stmtProfessor.setString(3, professor.getFormacao());
             stmtProfessor.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 
@@ -102,6 +104,8 @@ public class ProfessorDAO {
         try (PreparedStatement stmtProfessor = conn.prepareStatement(sqlProfessor)) {
             stmtProfessor.setString(1, cpf);
             stmtProfessor.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 }

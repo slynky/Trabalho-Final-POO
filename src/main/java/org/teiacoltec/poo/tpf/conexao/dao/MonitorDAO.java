@@ -24,6 +24,8 @@ public class MonitorDAO {
             stmtMonitor.setString(2, monitor.getMatricula());
             stmtMonitor.setString(3, monitor.getCurso());
             stmtMonitor.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 
@@ -57,10 +59,12 @@ public class MonitorDAO {
                     );
                     return Optional.of(monitor);
                 }
-
+                return Optional.empty();
             }
+        } catch (SQLException e) {
+            throw e;
         }
-        return Optional.empty();
+
     }
 
     public static List<Monitor> listarTodosMonitoresDaTurma(int idTurma) throws SQLException {
@@ -104,6 +108,8 @@ public class MonitorDAO {
         try (PreparedStatement stmtMonitor = conn.prepareStatement(sqlMonitor)) {
             stmtMonitor.setString(1, cpf);
             stmtMonitor.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 }

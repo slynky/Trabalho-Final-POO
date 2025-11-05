@@ -177,7 +177,8 @@ public class TurmaDAO {
                 ) {
             stmtTurma.setInt(1, id);
             stmtTurma.executeUpdate();
-
+        } catch (SQLException e) {
+            throw e;
         }
     }
 }

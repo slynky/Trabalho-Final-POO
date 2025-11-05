@@ -93,6 +93,8 @@ public class TarefaDAO {
         PreparedStatement stmtTarefa = conn.prepareStatement(sqlTarefa)){
             stmtTarefa.setInt(1, id);
             stmtTarefa.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 

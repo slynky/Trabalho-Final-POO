@@ -68,6 +68,20 @@ public class AtividadeDAO {
         return Optional.empty();
     }
 
+    public static void atualizarNome(int id, String novoNome) throws SQLException {
+        String sqlAtividade = "UPDATE Atividade SET nome = ? WHERE id = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmtAtividade = conn.prepareStatement(sqlAtividade)) {
+            stmtAtividade.setString(1, novoNome);
+            stmtAtividade.setInt(2, id);
+            stmtAtividade.executeUpdate();
+
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
     public static void removerAtividade(int id) throws SQLException {
         String sqlAtividade = "DELETE FROM Atividade WHERE id = ?";
 
@@ -76,6 +90,9 @@ public class AtividadeDAO {
 
             stmtAtividade.setInt(1, id);
             stmtAtividade.executeUpdate();
+
+        } catch (SQLException e) {
+            throw e;
         }
     }
 

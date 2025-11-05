@@ -24,6 +24,8 @@ public class AlunoDAO {
             stmtAluno.setString(2, aluno.getMatricula());
             stmtAluno.setString(3, aluno.getCurso());
             stmtAluno.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 
@@ -57,10 +59,12 @@ public class AlunoDAO {
                     );
                     return Optional.of(aluno);
                 }
+                return Optional.empty();
 
             }
+        } catch (SQLException e) {
+            throw e;
         }
-        return Optional.empty();
     }
 
     public static List<Aluno> listarTodosAlunosDaTurma(int idTurma) throws SQLException {
@@ -102,6 +106,8 @@ public class AlunoDAO {
         try (PreparedStatement stmtAluno = conn.prepareStatement(sqlAluno)) {
             stmtAluno.setString(1, cpf);
             stmtAluno.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 
@@ -114,6 +120,8 @@ public class AlunoDAO {
             stmt.setString(2, cpf);
             stmt.setDouble(3, notaAluno);
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 }

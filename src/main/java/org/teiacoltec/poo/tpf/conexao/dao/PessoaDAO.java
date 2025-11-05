@@ -74,8 +74,11 @@ public class PessoaDAO {
                     }
                 }
             }
+            return Optional.empty();
+        } catch (SQLException e) {
+            throw e;
         }
-        return Optional.empty();
+
     }
 
     public static void atualizarEndereco(String cpf, String novoEndereco, String senha) throws SQLException {
@@ -154,7 +157,7 @@ public class PessoaDAO {
                 try {
                     conn.rollback();
                 } catch (SQLException ex) {
-                    // Logar o erro de rollback, se necessário
+                    throw ex;
                 }
             }
             throw new SQLException("Erro ao remover pessoa: " + e.getMessage(), e);
@@ -165,7 +168,7 @@ public class PessoaDAO {
                     conn.setAutoCommit(true);
                     conn.close();
                 } catch (SQLException e) {
-                    // Logar o erro de fechamento, se necessário
+                    throw e;
                 }
             }
         }

@@ -11,9 +11,6 @@ import org.teiacoltec.poo.tpf.escolares.instituicoesEscolares.Turma;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Aluno;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Monitor;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Professor;
-import org.teiacoltec.poo.tpf.menus.MenuAlunoLogado;
-import org.teiacoltec.poo.tpf.menus.MenuMonitorLogado;
-import org.teiacoltec.poo.tpf.menus.MenuProfessorLogado;
 import org.teiacoltec.poo.tpf.pessoa.Pessoa;
 import org.teiacoltec.poo.tpf.util.Autenticacao;
 
@@ -89,17 +86,6 @@ public class Main {
                 continue; // Volta para o início do loop while
             }
 
-            // --- DIRECIONAMENTO PARA MENU ESPECIALIZADO ---
-            if (usuarioLogado instanceof Professor professor) {
-                // Inicia o menu do professor, que retorna a lista de turmas modificada
-                turmasCopia = MenuProfessorLogado.exibirMenu(professor, turmasCopia, scanner);
-            } else if (usuarioLogado instanceof Aluno aluno) {
-                // Inicia o menu do aluno
-                MenuAlunoLogado.exibirMenu(aluno, turmasCopia, scanner);
-            } else if (usuarioLogado instanceof Monitor monitor) {
-                // Inicia menu para o monitor
-                MenuMonitorLogado.exibirMenu(monitor, turmasCopia, scanner);
-            }
 
             // --- ETAPA DE SALVAMENTO ---
             System.out.print("Você realizou alterações. Deseja salvar antes de sair (s/n)? ");

@@ -1,5 +1,6 @@
 package org.teiacoltec.poo.tpf.menus;
 
+import org.teiacoltec.poo.tpf.menus.MainFrame;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Monitor;
 
 import javax.swing.*;
@@ -7,44 +8,29 @@ import java.awt.*;
 
 public class MenuMonitorLogado extends JPanel {
 
-    private Monitor monitor;
+    private final Monitor monitor;
 
-    public MenuMonitorLogado(MainFrame frame) {
-        setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+    public MenuMonitorLogado(MainFrame frame, Monitor monitor) {
+        this.monitor = monitor;
 
-        JLabel titulo = new JLabel("Painel do Monitor", SwingConstants.CENTER);
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 22));
-        titulo.setForeground(Color.decode("#2C3E50"));
+        setLayout(new BorderLayout(15, 15));
+        setBackground(Color.decode("#F5F7FA"));
+        setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+
+        //Título
+        JLabel titulo = new JLabel("Painel do Monitor - " + monitor.getNome(), SwingConstants.CENTER);
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titulo.setForeground(Color.decode("#1B5E20"));
         add(titulo, BorderLayout.NORTH);
 
-        JPanel botoes = new JPanel(new GridLayout(4, 1, 10, 10));
-        botoes.setBorder(BorderFactory.createEmptyBorder(40, 200, 40, 200));
+        //Painel de botões
+        JPanel botoes = new JPanel(new GridLayout(4, 1, 15, 15));
+        botoes.setOpaque(false);
 
-        JButton btnVisualizarAlunos = new JButton("Visualizar Alunos");
-        JButton btnLancarNotas = new JButton("Lançar Notas");
-        JButton btnConsultarNotas = new JButton("Consultar Notas");
-        JButton btnSair = new JButton("Sair");
-
-        estilizarBotao(btnVisualizarAlunos);
-        estilizarBotao(btnLancarNotas);
-        estilizarBotao(btnConsultarNotas);
-        estilizarBotao(btnSair);
-
-        // ações
-        btnVisualizarAlunos.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "👥 Lista de alunos da turma monitorada (integre com TurmaDAO).",
-                "Alunos da Turma", JOptionPane.INFORMATION_MESSAGE));
-
-        btnLancarNotas.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "✏️ Você pode lançar novas notas (sem edição posterior).",
-                "Lançar Notas", JOptionPane.INFORMATION_MESSAGE));
-
-        btnConsultarNotas.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "📊 Consulte as notas já lançadas.",
-                "Consultar Notas", JOptionPane.INFORMATION_MESSAGE));
-
-        btnSair.addActionListener(e -> frame.trocarPainel("LOGIN"));
+        JButton btnVisualizarAlunos = criarBotao("Visualizar Alunos");
+        JButton btnLancarNotas = criarBotao("Lançar Notas");
+        JButton btnConsultarNotas = criarBotao("Consultar Notas");
+        JButton btnSair = criarBotao("Sair");
 
         botoes.add(btnVisualizarAlunos);
         botoes.add(btnLancarNotas);
@@ -52,13 +38,33 @@ public class MenuMonitorLogado extends JPanel {
         botoes.add(btnSair);
 
         add(botoes, BorderLayout.CENTER);
+
+        // Ações dos botões
+        btnVisualizarAlunos.addActionListener(e -> frame.trocarPainel("ALUNOS_MONITOR"));
+        btnLancarNotas.addActionListener(e -> frame.trocarPainel("LANCAR_NOTAS"));
+        btnConsultarNotas.addActionListener(e -> frame.trocarPainel("CONSULTAR_NOTAS"));
+        btnSair.addActionListener(e -> frame.trocarPainel("LOGIN"));
     }
 
-    private void estilizarBotao(JButton botao) {
-        botao.setBackground(Color.decode("#388E3C"));
+    private JButton criarBotao(String texto) {
+        JButton botao = new JButton(texto);
+        botao.setBackground(Color.decode("#43A047"));
         botao.setForeground(Color.WHITE);
+        botao.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         botao.setFocusPainted(false);
-        botao.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        botao.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        //  hover
+        botao.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                botao.setBackground(Color.decode("#2E7D32"));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                botao.setBackground(Color.decode("#43A047"));
+            }
+        });
+        return botao;
     }
 }
-

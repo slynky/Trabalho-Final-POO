@@ -13,7 +13,7 @@ public class LoginPanel extends JPanel {
 
     private JTextField campoLogin;
     private JPasswordField campoSenha;
-    private JButton btnEntrar;
+    private JButton btnEntrar, btnCadastrar;
     private JLabel lblErro;
 
     public LoginPanel(MainFrame frame, List<Pessoa> usuarios) {
@@ -21,13 +21,14 @@ public class LoginPanel extends JPanel {
         setBackground(Color.decode("#F7F9FB"));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10,10,10,10);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel titulo = new JLabel("Login do Sistema", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("🎓 Login do Sistema Acadêmico", SwingConstants.CENTER);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 24));
-        titulo.setForeground(Color.decode("#333333"));
+        titulo.setForeground(Color.decode("#2C3E50"));
         gbc.gridwidth = 2;
+        gbc.gridx = 0; gbc.gridy = 0;
         add(titulo, gbc);
 
         gbc.gridy = 1; gbc.gridwidth = 1;
@@ -42,37 +43,51 @@ public class LoginPanel extends JPanel {
         gbc.gridx = 1;
         add(campoSenha, gbc);
 
-        lblErro = new JLabel("");
+        lblErro = new JLabel(" ");
         lblErro.setForeground(Color.RED);
+        lblErro.setFont(new Font("SansSerif", Font.PLAIN, 14));
         gbc.gridy = 3; gbc.gridx = 0; gbc.gridwidth = 2;
         add(lblErro, gbc);
 
+        // Painel de botões
+        JPanel painelBotoes = new JPanel(new GridLayout(1, 2, 15, 0));
+        painelBotoes.setBackground(Color.decode("#F7F9FB"));
+
         btnEntrar = new JButton("Entrar");
-        btnEntrar.setBackground(Color.decode("#1976D2"));
-        btnEntrar.setForeground(Color.WHITE);
+        estilizarBotao(btnEntrar, "#1976D2");
         btnEntrar.addActionListener(e -> autenticar(frame, usuarios));
+
+        painelBotoes.add(btnEntrar);
+
         gbc.gridy = 4;
-        add(btnEntrar, gbc);
+        add(painelBotoes, gbc);
     }
 
+    /**
+     * Tenta autenticar o usuário e direciona para o menu correto.
+     */
     private void autenticar(MainFrame frame, List<Pessoa> usuarios) {
-        String login = campoLogin.getText();
+        String login = campoLogin.getText().trim();
         String senha = new String(campoSenha.getPassword());
+
+        if (login.isEmpty() || senha.isEmpty()) {
+            lblErro.setText("Preencha todos os campos!");
+            return;
+        }
 
         try {
             Pessoa usuario = Autenticacao.autenticar(login, senha, usuarios);
-            frame.setUsuarioLogado(usuario);
-
-            if (usuario instanceof Professor)
-                frame.trocarPainel("PROFESSOR");
-            else if (usuario instanceof Aluno)
-                frame.trocarPainel("ALUNO");
-            else if (usuario instanceof Monitor)
-                frame.trocarPainel("MONITOR");
-
+            lblErro.setText(" ");
+            frame.autenticarUsuario(usuario);
         } catch (CredenciaisInvalidasException ex) {
             lblErro.setText("CPF ou senha inválidos!");
         }
     }
-}
 
+    private void estilizarBotao(JButton botao, String corHex) {
+        botao.setBackground(Color.decode(corHex));
+        botao.setForeground(Color.WHITE);
+        botao.setFocusPainted(false);
+        botao.setFont(new Font("SansSerif", Font.PLAIN, 16));
+    }
+}

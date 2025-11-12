@@ -45,7 +45,6 @@ public class Main {
     }
 
 
-
     private static void popularDadosIniciais() {
         turmas.clear();
 

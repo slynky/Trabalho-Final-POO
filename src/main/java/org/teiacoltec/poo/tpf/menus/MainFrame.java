@@ -1,5 +1,8 @@
 package org.teiacoltec.poo.tpf.menus;
 
+import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Aluno;
+import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Monitor;
+import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Professor;
 import org.teiacoltec.poo.tpf.pessoa.*;
 import org.teiacoltec.poo.tpf.util.Autenticacao;
 
@@ -14,9 +17,16 @@ public class MainFrame extends JFrame {
     private Pessoa usuarioLogado;
     private List<Pessoa> usuarios;
 
+    // Painéis dinâmicos
+    private LoginPanel loginPanel;
+    private MenuProfessorLogado painelProfessor;
+    private MenuAlunoLogado painelAluno;
+    private MenuMonitorLogado painelMonitor;
+
     public MainFrame(List<Pessoa> usuarios) {
         this.usuarios = usuarios;
-        setTitle("Sistema Acadêmico - Portal");
+
+        setTitle("Sistema Acadêmico");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
@@ -24,16 +34,49 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Adiciona painéis dinâmicos
-        mainPanel.add(new LoginPanel(this, usuarios), "LOGIN");
-        mainPanel.add(new MenuProfessorLogado(this), "PROFESSOR");
-        mainPanel.add(new MenuAlunoLogado(this), "ALUNO");
-        mainPanel.add(new MenuMonitorLogado(this), "MONITOR");
+        loginPanel = new LoginPanel(this, usuarios);
+
+        // Inicializa painéis vazios (serão criados após login)
+        painelProfessor = null;
+        painelAluno = null;
+        painelMonitor = null;
+
+        // Adiciona login inicial
+        mainPanel.add(loginPanel, "LOGIN");
 
         add(mainPanel);
         setVisible(true);
     }
 
+    /**
+     * Exibe o painel correspondente ao tipo de usuário logado.
+     */
+    public void autenticarUsuario(Pessoa usuario) {
+        this.usuarioLogado = usuario;
+
+        if (usuario instanceof Professor professor) {
+            painelProfessor = new MenuProfessorLogado(this, professor);
+            mainPanel.add(painelProfessor, "PROFESSOR");
+            trocarPainel("PROFESSOR");
+
+        } else if (usuario instanceof Aluno aluno) {
+            painelAluno = new MenuAlunoLogado(this, aluno);
+            mainPanel.add(painelAluno, "ALUNO");
+            trocarPainel("ALUNO");
+
+        } else if (usuario instanceof Monitor monitor) {
+            painelMonitor = new MenuMonitorLogado(this, monitor);
+            mainPanel.add(painelMonitor, "MONITOR");
+            trocarPainel("MONITOR");
+        } else {
+            JOptionPane.showMessageDialog(this, "Tipo de usuário desconhecido!", "Erro", JOptionPane.ERROR_MESSAGE);
+            trocarPainel("LOGIN");
+        }
+    }
+
+    /**
+     * Troca o painel visível com base no nome registrado no CardLayout.
+     */
     public void trocarPainel(String nomePainel) {
         cardLayout.show(mainPanel, nomePainel);
     }
@@ -44,5 +87,9 @@ public class MainFrame extends JFrame {
 
     public Pessoa getUsuarioLogado() {
         return usuarioLogado;
+    }
+
+    public List<Pessoa> getUsuarios() {
+        return usuarios;
     }
 }

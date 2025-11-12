@@ -1,50 +1,34 @@
 package org.teiacoltec.poo.tpf.menus;
 
+import org.teiacoltec.poo.tpf.menus.MainFrame;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Aluno;
-
 import javax.swing.*;
 import java.awt.*;
 
 public class MenuAlunoLogado extends JPanel {
 
-    private Aluno aluno;
+    private final Aluno aluno;
 
-    public MenuAlunoLogado(MainFrame frame) {
-        setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+    public MenuAlunoLogado(MainFrame frame, Aluno aluno) {
+        this.aluno = aluno;
+        setLayout(new BorderLayout(15, 15));
+        setBackground(Color.decode("#F5F7FA"));
+        setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        JLabel titulo = new JLabel("Painel do Aluno", SwingConstants.CENTER);
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 22));
+        //Título
+        JLabel titulo = new JLabel("Painel do Aluno - " + aluno.getNome(), SwingConstants.CENTER);
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titulo.setForeground(Color.decode("#2C3E50"));
         add(titulo, BorderLayout.NORTH);
 
-        JPanel botoes = new JPanel(new GridLayout(4, 1, 10, 10));
-        botoes.setBorder(BorderFactory.createEmptyBorder(40, 200, 40, 200));
+        //Painel de botões
+        JPanel botoes = new JPanel(new GridLayout(4, 1, 15, 15));
+        botoes.setOpaque(false);
 
-        JButton btnTurmas = new JButton("Minhas Turmas");
-        JButton btnAtividades = new JButton("Atividades");
-        JButton btnNotas = new JButton("Minhas Notas");
-        JButton btnSair = new JButton("Sair");
-
-        estilizarBotao(btnTurmas);
-        estilizarBotao(btnAtividades);
-        estilizarBotao(btnNotas);
-        estilizarBotao(btnSair);
-
-        // ações
-        btnTurmas.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "Suas turmas serão listadas aqui (integre com TurmaDAO).",
-                "Turmas do Aluno", JOptionPane.INFORMATION_MESSAGE));
-
-        btnAtividades.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "📝 Suas atividades serão exibidas aqui (integre com AtividadeDAO).",
-                "Atividades", JOptionPane.INFORMATION_MESSAGE));
-
-        btnNotas.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "📊 Suas notas serão exibidas aqui (integre com NotaDAO).",
-                "Notas", JOptionPane.INFORMATION_MESSAGE));
-
-        btnSair.addActionListener(e -> frame.trocarPainel("LOGIN"));
+        JButton btnTurmas = criarBotao("Minhas Turmas");
+        JButton btnAtividades = criarBotao("Atividades");
+        JButton btnNotas = criarBotao("Minhas Notas");
+        JButton btnSair = criarBotao("Sair");
 
         botoes.add(btnTurmas);
         botoes.add(btnAtividades);
@@ -52,13 +36,32 @@ public class MenuAlunoLogado extends JPanel {
         botoes.add(btnSair);
 
         add(botoes, BorderLayout.CENTER);
+
+        //Ações dos botões
+        btnTurmas.addActionListener(e -> frame.trocarPainel("TURMAS_ALUNO"));
+        btnAtividades.addActionListener(e -> frame.trocarPainel("ATIVIDADES_ALUNO"));
+        btnNotas.addActionListener(e -> frame.trocarPainel("NOTAS_ALUNO"));
+        btnSair.addActionListener(e -> frame.trocarPainel("LOGIN"));
     }
 
-    private void estilizarBotao(JButton botao) {
+    private JButton criarBotao(String texto) {
+        JButton botao = new JButton(texto);
         botao.setBackground(Color.decode("#1976D2"));
         botao.setForeground(Color.WHITE);
+        botao.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         botao.setFocusPainted(false);
-        botao.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        botao.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // Efeito de hover
+        botao.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                botao.setBackground(Color.decode("#1565C0"));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                botao.setBackground(Color.decode("#1976D2"));
+            }
+        });
+        return botao;
     }
 }
-

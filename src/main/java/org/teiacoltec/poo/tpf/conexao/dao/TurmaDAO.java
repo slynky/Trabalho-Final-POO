@@ -3,6 +3,7 @@ package org.teiacoltec.poo.tpf.conexao.dao;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.teiacoltec.poo.tpf.conexao.ConexaoBD;
 import org.teiacoltec.poo.tpf.escolares.instituicoesEscolares.Turma;
@@ -180,5 +181,47 @@ public class TurmaDAO {
         } catch (SQLException e) {
             throw e;
         }
+    }
+
+    public static List<String> listarNomesTurmaPorCpf(String cpf) throws SQLException {
+        List<String> nomes = new ArrayList<>();
+        String sql = "SELECT t.nome FROM Turma t " +
+                "JOIN Turma_Participantes tp ON t.id = tp.id_turma " +
+                "WHERE tp.cpf_pessoa = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cpf);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    nomes.add(rs.getString("nome"));
+                }
+            }
+        }
+        return nomes;
+    }
+
+    public static List<Turma> listarTurmasPorCpfMonitor(String cpf) throws SQLException {
+        List<Turma> turmas = new ArrayList<>();
+        String sql = "SELECT DISTINCT t.id FROM Turma t " +
+                "JOIN Turma_Participantes tp ON t.id = tp.id_turma " +
+                "JOIN Monitor m ON tp.cpf_pessoa = m.cpf " +
+                "WHERE m.cpf = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cpf);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Reutiliza o obterTurmaPorId para carregar a turma completa
+                    obterTurmaPorId(rs.getInt("id")).ifPresent(turmas::add);
+                }
+            }
+        }
+        return turmas;
     }
 }

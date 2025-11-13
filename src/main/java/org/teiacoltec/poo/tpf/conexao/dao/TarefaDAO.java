@@ -21,33 +21,30 @@ public class TarefaDAO {
 
     public static void inserirTarefa(Tarefa tarefa) throws SQLException {
 
-        String sqlTarefa = "INSERT INTO Tarefa (nome, id_turma, id_atividade, nota) " + "VALUES ( ?, ?, ?, ?)";
+        String sqlTarefa = "INSERT INTO Tarefa (nome, id_turma, id_atividade, nota) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConexaoBD.getConnection()) {
-
             conn.setAutoCommit(false);
-
             try (PreparedStatement stmt = conn.prepareStatement(sqlTarefa)) {
 
-
                 stmt.setString(1, tarefa.getNome());
-                stmt.setInt(2, tarefa.getTurmaId());
-                stmt.setInt(3, tarefa.getAtividadeId());
+                stmt.setInt(2, tarefa.getTurmaId()); // Pega o ID da Turma
+                stmt.setInt(3, tarefa.getAtividadeId()); // Pega o ID da Atividade
                 stmt.setFloat(4, tarefa.getNota());
 
-
                 int linhasAfetadas = stmt.executeUpdate();
-                if (linhasAfetadas > 0) {conn.commit();}
+                if (linhasAfetadas > 0) {
+                    conn.commit();
+                } else {
+                    throw new SQLException("Falha ao inserir tarefa, nenhuma linha afetada.");
+                }
 
-
-
-            }catch (SQLException e){
-                System.out.println("Erro ao inserir tarefa. Invertendo transacao.");
+            } catch (SQLException e) {
+                System.err.println("Erro ao inserir tarefa. Revertendo transacao. " + e.getMessage());
                 conn.rollback();
                 throw e;
             }
         }
-
     }
 
     public static Optional<Tarefa> buscarPorId(int id) throws SQLException {
@@ -96,6 +93,25 @@ public class TarefaDAO {
         } catch (SQLException e) {
             throw e;
         }
+    }
+
+    public static List<Tarefa> listarTarefasPorTurma(int idTurma) throws SQLException {
+        List<Tarefa> tarefas = new ArrayList<>();
+        String sql = "SELECT id FROM Tarefa WHERE id_turma = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idTurma);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Reutiliza o buscarPorId para carregar a tarefa completa
+                    buscarPorId(rs.getInt("id")).ifPresent(tarefas::add);
+                }
+            }
+        }
+        return tarefas;
     }
 
 }

@@ -5,7 +5,7 @@ import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Monitor;
 import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Professor;
 import org.teiacoltec.poo.tpf.pessoa.*;
 import org.teiacoltec.poo.tpf.util.Autenticacao;
-
+import org.teiacoltec.poo.tpf.menus.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -48,9 +48,6 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
-    /**
-     * Exibe o painel correspondente ao tipo de usuário logado.
-     */
     public void autenticarUsuario(Pessoa usuario) {
         this.usuarioLogado = usuario;
 
@@ -74,9 +71,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    /**
-     * Troca o painel visível com base no nome registrado no CardLayout.
-     */
+
     public void trocarPainel(String nomePainel) {
         cardLayout.show(mainPanel, nomePainel);
     }

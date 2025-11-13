@@ -6,8 +6,6 @@ import java.sql.Statement;
 
 public class TesteConexao {
 
-
-
     public static void main(String[] args) {
 
         try (Connection conn = ConexaoBD.getConnection()) {

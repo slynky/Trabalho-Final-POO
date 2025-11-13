@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.teiacoltec.poo.tpf.conexao.ConexaoBD;
 import org.teiacoltec.poo.tpf.escolares.Atividade;
@@ -94,6 +96,32 @@ public class AtividadeDAO {
         } catch (SQLException e) {
             throw e;
         }
+    }
+
+    public static List<Atividade> listarTodas() throws SQLException {
+        List<Atividade> atividades = new ArrayList<>();
+        String sql = "SELECT * FROM Atividade";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String dataInicio = rs.getDate("data_inicio").toLocalDate().format(FORMATADOR);
+                String dataFim = rs.getDate("data_fim").toLocalDate().format(FORMATADOR);
+
+                Atividade atividade = new Atividade(
+                        rs.getInt("id"),
+                        rs.getString("nome"),
+                        rs.getString("descricao"),
+                        dataInicio,
+                        dataFim,
+                        rs.getFloat("valor")
+                );
+                atividades.add(atividade);
+            }
+        }
+        return atividades;
     }
 
 }

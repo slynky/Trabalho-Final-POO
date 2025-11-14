@@ -43,7 +43,7 @@ public class Atividade{
     public String getDesc() {return this.desc;}
     public LocalDate getInicio() {return this.inicio;}
     public LocalDate getFim() {return this.fim;}
-    public static Object getValor() {return this.valor;}
+    public float getValor() {return this.valor;}
 
     public void setNome(String nome) {this.nome = nome;}
 

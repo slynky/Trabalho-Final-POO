@@ -16,23 +16,24 @@ public class TurmaDAO {
 
 
     public static void inserirTurma(Turma turma) throws SQLException {
-        String sqlTurma = "INSERT INTO Turma (nome, descricao, data_inicio, data_fim, id_turma_pai) VALUES (?, ?, ?, ?, ?)";
+        String sqlTurma = "INSERT INTO Turma (id, nome, descricao, data_inicio, data_fim, id_turma_pai) VALUES (?, ?, ?, ?, ?)";
 
         Connection conn = null;
         try {
             conn = ConexaoBD.getConnection();
             conn.setAutoCommit(false);
 
-            try (PreparedStatement stm = conn.prepareStatement(sqlTurma, Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement stm = conn.prepareStatement(sqlTurma)) {
 
-                stm.setString(1, turma.getNome());
-                stm.setString(2, turma.getDesc());
-                stm.setDate(3, Date.valueOf(turma.getInicio()));
-                stm.setDate(4, Date.valueOf(turma.getFim()));
+                stm.setInt(1, turma.getId());
+                stm.setString(2, turma.getNome());
+                stm.setString(3, turma.getDesc());
+                stm.setDate(4, Date.valueOf(turma.getInicio()));
+                stm.setDate(5, Date.valueOf(turma.getFim()));
                 if (turma.getTurmaPai() != null) {
-                    stm.setInt(5, turma.getTurmaPai().getId());
+                    stm.setInt(6, turma.getTurmaPai().getId());
                 } else {
-                    stm.setNull(5, java.sql.Types.INTEGER);
+                    stm.setNull(6, java.sql.Types.INTEGER);
                 }
 
                 int linhasAfetadas = stm.executeUpdate();
@@ -40,17 +41,10 @@ public class TurmaDAO {
                     throw new SQLException("Falha ao inserir turma, nenhuma linha afetada.");
                 }
 
-                int novoIdTurma = -1;
-                try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        novoIdTurma = generatedKeys.getInt(1);
-                    } else {
-                        throw new SQLException("Falha ao obter o ID da turma inserida.");
-                    }
-                }
 
                 for (Pessoa p : turma.getParticipantes()) {
-                    inserirParticipante(conn, p.getCpf(), novoIdTurma);
+                    PessoaDAO.inserir(p);
+                    inserirParticipante(conn, p.getCpf(), turma.getId());
                 }
 
                 conn.commit();

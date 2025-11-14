@@ -177,7 +177,7 @@ public class MenuMonitorLogado extends JPanel {
             String nomeTarefa = JOptionPane.showInputDialog(this, "Dê um nome para esta Tarefa (ex: P1 - Turma da Manhã):", atividadeBase.getNome());
             if (nomeTarefa == null || nomeTarefa.isBlank()) return;
 
-            String valorTarefaStr = JOptionPane.showInputDialog(this, "Qual o valor (nota) desta Tarefa?", Atividade.getValor());
+            String valorTarefaStr = JOptionPane.showInputDialog(this, "Qual o valor (nota) desta Tarefa?" + atividadeBase.getValor());
             if (valorTarefaStr == null || valorTarefaStr.isBlank()) return;
             float valorTarefa = Float.parseFloat(valorTarefaStr);
 

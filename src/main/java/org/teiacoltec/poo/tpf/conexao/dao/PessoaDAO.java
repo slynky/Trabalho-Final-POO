@@ -12,7 +12,7 @@ import org.teiacoltec.poo.tpf.util.Criptografar;
 
 public class PessoaDAO {
 
-    public static void inserir(Pessoa pessoa) throws SQLException { //testar com pessoa.getCpf e tals acho q n pode por pessoa ser abstrato
+    public static void inserir(Pessoa pessoa) throws SQLException {
         String sqlPessoa = "INSERT INTO Pessoa (cpf, nome, nascimento, email, endereco, senha, tipo_pessoa) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 

@@ -23,9 +23,11 @@ public class CarregarAoBanco {
     public void Salvar() { //use para promover um salvamento automatico antes do fechamento ou apenas use uma janela pop-up com a mensagem(deseja salvar as alteracoes?)
         try {
             for (Turma t : turmas) {
-                TurmaDAO.inserirTurma(t);
+                if(!TurmaDAO.obterTurmaPorId(t.getId()).isPresent())
+                    TurmaDAO.inserirTurma(t);
                 for (Atividade a : t.getAtividades()) {
                     try {
+                        if(!AtividadeDAO.buscarPorId(a.getId()).isPresent())
                         AtividadeDAO.inserirAtividade(a);
                     } catch (SQLException eAtividade) {
                         System.err.println("Erro ao salvar a atividade ID: " + a.getId() + " da turma " + t.getId());
@@ -33,6 +35,7 @@ public class CarregarAoBanco {
                 }
                 for (Tarefa ta : t.getTarefas()) {
                     try {
+                        if (!TarefaDAO.buscarPorId(ta.getId()).isPresent())
                         TarefaDAO.inserirTarefa(ta);
                     } catch (SQLException eTarefa) {
                         System.err.println("Erro ao salvar a tarefa ID: " + ta.getId() + " da turma " + t.getId());

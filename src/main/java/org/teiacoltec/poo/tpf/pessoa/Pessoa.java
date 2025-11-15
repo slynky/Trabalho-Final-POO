@@ -69,6 +69,8 @@ public abstract class Pessoa {
         this.endereco = endereco;
     }
 
+    public void setNome(String nome) {this.nome = nome;}
+
 
     @Override
     public String toString(){

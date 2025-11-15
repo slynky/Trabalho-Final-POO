@@ -29,6 +29,55 @@ public class AlunoDAO {
         }
     }
 
+    public static void atualizarEspecifico(Connection conn, Aluno aluno) throws SQLException {
+        String sqlAluno = "UPDATE Aluno SET matricula = ?, curso = ? WHERE cpf = ?";
+
+        try (PreparedStatement stmtAluno = conn.prepareStatement(sqlAluno)) {
+            stmtAluno.setString(1, aluno.getMatricula());
+            stmtAluno.setString(2, aluno.getCurso());
+            stmtAluno.setString(3, aluno.getCpf()); // WHERE clause
+            stmtAluno.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public static Optional<Aluno> buscarPorCpf(String cpf) throws SQLException {
+        String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
+                "a.matricula, a.curso, p.senha " +
+                "FROM Pessoa p " +
+                "JOIN Aluno a ON p.cpf = a.cpf " +
+                "WHERE p.cpf = ? AND p.tipo_pessoa = 'ALUNO'"; // <-- Senha removida da condição
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cpf);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if(rs.next()) {
+                    String dataNasc = rs.getDate("nascimento").toLocalDate().format(FORMATADOR);
+                    String senhaHash = rs.getString("senha");
+
+                    Aluno aluno = new Aluno(
+                            rs.getString("cpf"),
+                            rs.getString("nome"),
+                            dataNasc,
+                            rs.getString("email"),
+                            rs.getString("endereco"),
+                            rs.getString("matricula"),
+                            rs.getString("curso"),
+                            senhaHash
+                    );
+                    return Optional.of(aluno);
+                }
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
     public static Optional<Aluno> buscarPorCpf(String cpf, String senha) throws SQLException {
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "a.matricula, a.curso " +

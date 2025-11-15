@@ -14,9 +14,75 @@ public class TurmaDAO {
     private static final DateTimeFormatter FORMATADOR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 
+    public static void atualizarTurma(Turma turma) throws SQLException {
+        String sqlTurma = "UPDATE Turma SET nome = ?, descricao = ?, data_inicio = ?, data_fim = ?, id_turma_pai = ? WHERE id = ?";
+
+        // SQL para remover todos os participantes antigos
+        String sqlRemoverParticipantes = "DELETE FROM Turma_Participantes WHERE id_turma = ?";
+
+        Connection conn = null;
+        try {
+            conn = ConexaoBD.getConnection();
+            // Inicia a transação
+            conn.setAutoCommit(false);
+
+            // 1. Atualiza os dados básicos da Turma
+            try (PreparedStatement stm = conn.prepareStatement(sqlTurma)) {
+
+                stm.setString(1, turma.getNome());
+                stm.setString(2, turma.getDesc());
+                // Converte LocalDate para java.sql.Date
+                stm.setDate(3, Date.valueOf(turma.getInicio()));
+                stm.setDate(4, Date.valueOf(turma.getFim()));
+
+                if (turma.getTurmaPai() != null) {
+                    stm.setInt(5, turma.getTurmaPai().getId());
+                } else {
+                    stm.setNull(5, java.sql.Types.INTEGER);
+                }
+
+                stm.setInt(6, turma.getId()); // WHERE id = ?
+
+                int linhasAfetadas = stm.executeUpdate();
+                if (linhasAfetadas == 0) {
+                    throw new SQLException("Falha ao atualizar turma (ID " + turma.getId() + "), nenhuma linha afetada.");
+                }
+            }
+
+            // 2. Sincroniza Participantes
+            // 2a. Remove todos os participantes existentes para essa turma
+            try (PreparedStatement stmRemover = conn.prepareStatement(sqlRemoverParticipantes)) {
+                stmRemover.setInt(1, turma.getId());
+                stmRemover.executeUpdate();
+            }
+
+            // 2b. Insere os participantes atualizados
+            for (Pessoa p : turma.getParticipantes()) {
+                // Insere ou atualiza a Pessoa (se necessário) - dependendo da lógica do PessoaDAO
+                PessoaDAO.inserir(p);
+                // Insere a relação Turma_Participantes
+                inserirParticipante(conn, p.getCpf(), turma.getId());
+            }
+
+            // Confirma todas as alterações na transação
+            conn.commit();
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar Turma. Revertendo processo. Erro: " + e.getMessage());
+            if (conn != null) conn.rollback(); // Reverte em caso de erro
+            throw e;
+        } finally {
+            if (conn != null) {
+                // Volta para o modo de commit automático
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        }
+    }
+
 
     public static void inserirTurma(Turma turma) throws SQLException {
-        String sqlTurma = "INSERT INTO Turma (id, nome, descricao, data_inicio, data_fim, id_turma_pai) VALUES (?, ?, ?, ?, ?)";
+        String sqlTurma = "INSERT INTO Turma (id, nome, descricao, data_inicio, data_fim, id_turma_pai) VALUES (?, ?, ?, ?, ?, ?)";
 
         Connection conn = null;
         try {
@@ -104,10 +170,13 @@ public class TurmaDAO {
         }
     }
 
+    // Dentro de TurmaDAO.java
+
     public static Optional<Turma> obterTurmaPorId(int id) throws SQLException {
 
         String sqlTurma = "SELECT * FROM Turma WHERE id = ?";
-        String sqlParticipantes = "SELECT tp.cpf_pessoa, p.senha FROM Turma_Participantes tp JOIN Pessoa p ON p.cpf = tp.cpf_pessoa WHERE tp.id_turma = ?";
+        // Alteração 1: A query de participantes não precisa mais da senha
+        String sqlParticipantes = "SELECT tp.cpf_pessoa FROM Turma_Participantes tp WHERE tp.id_turma = ?";
 
         try (Connection conn = ConexaoBD.getConnection();
              PreparedStatement stmtTurma = conn.prepareStatement(sqlTurma)) {
@@ -129,9 +198,8 @@ public class TurmaDAO {
                             while (rs2.next()) {
 
                                 String cpfParticipante = rs2.getString("cpf_pessoa");
-                                String senhaParticipante = rs2.getString("senha");
 
-                                PessoaDAO.buscarPessoaPorCpf(cpfParticipante, senhaParticipante)
+                                PessoaDAO.buscarPessoaPorCpfSemValidacao(cpfParticipante)
                                         .ifPresent(participantes::add);
                             }
                         }
@@ -165,6 +233,7 @@ public class TurmaDAO {
             throw e;
         }
     }
+
     public static void removerTurmaPorId(int id) throws SQLException {
         String sqlTurma = "DELETE FROM Turma WHERE id = ?";
         try (Connection conn = ConexaoBD.getConnection();

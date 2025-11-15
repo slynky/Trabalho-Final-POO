@@ -29,6 +29,55 @@ public class MonitorDAO {
         }
     }
 
+    public static void atualizarEspecifico(Connection conn, Monitor monitor) throws SQLException {
+        String sqlMonitor = "UPDATE Monitor SET matricula = ?, curso = ? WHERE cpf = ?";
+
+        try (PreparedStatement stmtMonitor = conn.prepareStatement(sqlMonitor)) {
+            stmtMonitor.setString(1, monitor.getMatricula());
+            stmtMonitor.setString(2, monitor.getCurso());
+            stmtMonitor.setString(3, monitor.getCpf()); // WHERE clause
+            stmtMonitor.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public static Optional<Monitor> buscarPorCpf(String cpf) throws SQLException {
+        String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
+                "m.matricula, m.curso, p.senha " +
+                "FROM Pessoa p " +
+                "JOIN Monitor m ON p.cpf = m.cpf " +
+                "WHERE p.cpf = ? AND p.tipo_pessoa = 'MONITOR'"; // <-- Senha removida da condição
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cpf);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if(rs.next()) {
+                    String dataNasc = rs.getDate("nascimento").toLocalDate().format(FORMATADOR);
+                    String senhaHash = rs.getString("senha");
+
+                    Monitor monitor = new Monitor(
+                            rs.getString("cpf"),
+                            rs.getString("nome"),
+                            dataNasc,
+                            rs.getString("email"),
+                            rs.getString("endereco"),
+                            rs.getString("matricula"),
+                            rs.getString("curso"),
+                            senhaHash
+                    );
+                    return Optional.of(monitor);
+                }
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
     public static Optional<Monitor> buscarPorCpf(String cpf, String senha) throws SQLException {
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "m.matricula, m.curso " +

@@ -4,7 +4,7 @@ import org.teiacoltec.poo.tpf.escolares.instituicoesEscolares.Turma;
 
 public class Tarefa{
 
-    private int id;
+    private final int id;
     private String nome;
     private Turma turma;
     private Atividade atividade;

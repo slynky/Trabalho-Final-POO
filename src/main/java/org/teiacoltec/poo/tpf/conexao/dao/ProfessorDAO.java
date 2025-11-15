@@ -30,6 +30,53 @@ public class ProfessorDAO {
         }
     }
 
+    public static void atualizarEspecifico(Connection conn, Professor professor) throws SQLException {
+        String sqlProfessor = "UPDATE Professor SET matricula = ?, formacao = ? WHERE cpf = ?";
+
+        try (PreparedStatement stmtProfessor = conn.prepareStatement(sqlProfessor)) {
+            stmtProfessor.setString(1, professor.getMatricula());
+            stmtProfessor.setString(2, professor.getFormacao());
+            stmtProfessor.setString(3, professor.getCpf()); // WHERE clause
+            stmtProfessor.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public static Optional<Professor> buscarPorCpf(String cpf) throws SQLException {
+        String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
+                "pr.matricula, pr.formacao, p.senha " + // Inclui a senha criptografada para o construtor
+                "FROM Pessoa p " +
+                "JOIN Professor pr ON p.cpf = pr.cpf " +
+                "WHERE p.cpf = ? AND p.tipo_pessoa = 'PROFESSOR'";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cpf); // Apenas o CPF é usado
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String dataNasc = rs.getDate("nascimento").toLocalDate().format(FORMATADOR);
+                    String senhaHash = rs.getString("senha"); // Pega a senha já em hash do BD
+
+                    Professor professor = new Professor(
+                            rs.getString("cpf"),
+                            rs.getString("nome"),
+                            dataNasc,
+                            rs.getString("email"),
+                            rs.getString("endereco"),
+                            rs.getString("matricula"),
+                            rs.getString("formacao"),
+                            senhaHash // Passa a senha hash para o construtor
+                    );
+                    return Optional.of(professor);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     public static Optional<Professor> buscarPorCpf(String cpf, String senha) throws SQLException {
         String sql = "SELECT p.cpf, p.nome, p.nascimento, p.email, p.endereco, " +
                 "pr.matricula, pr.formacao " +

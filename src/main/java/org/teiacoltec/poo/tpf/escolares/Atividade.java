@@ -46,8 +46,10 @@ public class Atividade{
     public float getValor() {return this.valor;}
 
     public void setNome(String nome) {this.nome = nome;}
-
-
+    public void setDesc(String desc) {this.desc = desc;}
+    public void setInicio(String inicio) {this.inicio = LocalDate.parse(inicio, FORMATADOR);}
+    public void setFim(String fim) {this.fim = LocalDate.parse(fim, FORMATADOR);}
+    public void setValor(float valor) {this.valor = valor;}
 
     @Override
     public String toString() {

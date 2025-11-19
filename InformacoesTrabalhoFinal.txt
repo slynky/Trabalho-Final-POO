@@ -1,0 +1,15 @@
+Trabalho Final de POO
+Grupo: Arthur Augusto, Kauã Vitor e Lucas Oliveira 
+Turma: 203
+
+Acesso Professor
+CPF: 12345678900
+Senha: 1
+
+Acesso Aluno
+CPF: 11122233344
+Senha: 1
+
+Acesso Monitor
+CPF: 44455566677
+Senha: 1

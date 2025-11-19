@@ -108,17 +108,32 @@ public class Main {
         Tarefa tarefaOriginal = new Tarefa(200, "Tarefa 1.0 - Inicial", turmaOriginal, atividadeOriginal, 10.0f);
 
 
-        // --- TESTE 1: INSERÇÃO (Turma, Pessoa, Atividade e Tarefa) ---
-
+        // --- TESTE 1: INSERÇÃO ---
         System.out.println("\n== 1. TESTE DE INSERÇÃO ==");
+
         try {
             TurmaDAO.inserirTurma(turmaOriginal);
-            AtividadeDAO.inserirAtividade(atividadeOriginal);
-            TarefaDAO.inserirTarefa(tarefaOriginal);
-            System.out.println("Inserção de Turma, Pessoa, Atividade e Tarefa concluída.");
+            System.out.println("Turma inserida.");
         } catch (SQLException e) {
-            System.err.println("Erro durante Inserção: " + e.getMessage());
+            System.out.println("Aviso: Turma já existe ou erro: " + e.getMessage());
         }
+
+        // Tenta inserir Atividade
+        try {
+            AtividadeDAO.inserirAtividade(atividadeOriginal);
+            System.out.println("Atividade inserida.");
+        } catch (SQLException e) {
+            System.out.println("Aviso: Atividade já existe ou erro: " + e.getMessage());
+        }
+
+        // Tenta inserir Tarefa
+        try {
+            TarefaDAO.inserirTarefa(tarefaOriginal);
+            System.out.println("Tarefa inserida.");
+        } catch (SQLException e) {
+            System.out.println("Aviso: Tarefa já existe ou erro: " + e.getMessage());
+        }
+
 
         // --- TESTE 2: ATUALIZAÇÃO DA ATIVIDADE ---
 
@@ -128,6 +143,7 @@ public class Main {
         atividadeOriginal.setValor(100.0f);
         atividadeOriginal.setDesc("Nova descrição: Projeto completo.");
         atividadeOriginal.setFim(LocalDate.now().plusDays(30).format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
 
         AtividadeDAO.atualizarAtividade(atividadeOriginal);
 

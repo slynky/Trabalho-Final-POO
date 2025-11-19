@@ -1,8 +1,6 @@
 package org.teiacoltec.poo.tpf;
 
-import org.teiacoltec.poo.tpf.conexao.dao.AtividadeDAO;
-import org.teiacoltec.poo.tpf.conexao.dao.TarefaDAO;
-import org.teiacoltec.poo.tpf.conexao.dao.TurmaDAO;
+import org.teiacoltec.poo.tpf.conexao.dao.*;
 import org.teiacoltec.poo.tpf.escolares.Atividade;
 import org.teiacoltec.poo.tpf.escolares.Tarefa;
 import org.teiacoltec.poo.tpf.escolares.instituicoesEscolares.Turma;
@@ -12,6 +10,7 @@ import org.teiacoltec.poo.tpf.escolares.membrosEscolares.Professor;
 import org.teiacoltec.poo.tpf.menus.MainFrame;
 import org.teiacoltec.poo.tpf.pessoa.Pessoa;
 
+import javax.swing.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,15 +19,80 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-    private static List<Atividade> atividades = new ArrayList<>();
     private static List<Turma> turmas = new ArrayList<>();
 
     public static void main(String[] args) throws SQLException {
 
-        //popularDadosIniciais();
-        //MainFrame mainFrame = new MainFrame(obterTodosOsUsuarios(turmas));
+        popularDadosIniciais();
+
+        List<Pessoa> todosUsuarios = obterTodosOsUsuarios(turmas);
+
+        SwingUtilities.invokeLater(() -> {
+            MainFrame mainFrame = new MainFrame(todosUsuarios);
+            mainFrame.setVisible(true);
+        });
 
         testeDAO();
+    }
+
+    private static void popularDadosIniciais() {
+        turmas.clear();
+
+        System.out.println("--- Populando Dados Iniciais ---");
+
+        Professor p1 = new Professor("12345678900", "Carlos Pereira", "10/05/1985", "carlos.p@escola.edu", "Rua das Flores, 123", "P001", "Doutorado", "1");
+        Aluno a1 = new Aluno("11122233344", "Beatriz Costa", "20/03/2005", "bia.costa@email.com", "Av. Principal, 456", "A001", "Ciência da Computação", "1");
+        Monitor m1 = new Monitor("44455566677", "Lucas Martins", "28/05/1999", "lucas.m@email.com", "Travessa dos Sonhos, 78", "M001", "Ciência da Computação", "1");
+
+        inserirPessoaSeguro(p1);
+        inserirPessoaSeguro(a1);
+        inserirPessoaSeguro(m1);
+
+        Turma turmaPrincipal = new Turma(1, "Desenvolvimento de Software 2025", "POO e Java", "01/08/2025", "15/12/2025", new ArrayList<>(), null);
+        turmaPrincipal.adicionarParticipante(p1);
+        turmaPrincipal.adicionarParticipante(a1);
+        turmaPrincipal.adicionarParticipante(m1);
+
+        turmas.add(turmaPrincipal);
+
+        try {
+            if (TurmaDAO.obterTurmaPorId(1).isEmpty()) {
+                TurmaDAO.inserirTurma(turmaPrincipal);
+                System.out.println("Turma inserida no banco.");
+            }
+
+            // Vincula Professor e Aluno
+            vincularParticipante(p1.getCpf(), turmaPrincipal.getId());
+            vincularParticipante(a1.getCpf(), turmaPrincipal.getId());
+
+            vincularParticipante(m1.getCpf(), turmaPrincipal.getId());
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao sincronizar turma com banco: " + e.getMessage());
+        }
+    }
+
+    private static List<Pessoa> obterTodosOsUsuarios(List<Turma> turmas) {
+        return turmas.stream()
+                .flatMap(turma -> turma.getParticipantes().stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private static void inserirPessoaSeguro(Pessoa p) {
+        try {
+            PessoaDAO.inserir(p);
+        } catch (SQLException e) {
+            if (e.getErrorCode() != 1062) e.printStackTrace(); // Ignora erro de chave duplicada
+        }
+    }
+
+    private static void vincularParticipante(String cpf, int idTurma) {
+        try {
+            TurmaDAO.inserirParticipante(cpf, idTurma);
+            System.out.println("Vinculado com sucesso: " + cpf + " -> Turma " + idTurma);
+        } catch (SQLException e) {
+        }
     }
 
     private static void testeDAO() throws SQLException {
@@ -56,7 +120,6 @@ public class Main {
             System.err.println("Erro durante Inserção: " + e.getMessage());
         }
 
-
         // --- TESTE 2: ATUALIZAÇÃO DA ATIVIDADE ---
 
         System.out.println("\n== 2. ATUALIZAÇÃO DA ATIVIDADE ==");
@@ -73,7 +136,6 @@ public class Main {
         System.out.println("Nome novo: " + atividadeAtualizada.getNome());
         System.out.println("Valor novo: " + atividadeAtualizada.getValor());
         System.out.println("Atividade atualizada com sucesso.");
-
 
         // --- TESTE 3: ATUALIZAÇÃO DA PESSOA (UPSET via TurmaDAO) ---
 
@@ -112,28 +174,5 @@ public class Main {
         System.out.println("Tarefa atualizada com sucesso.");
 
         System.out.println("\n--- TESTES DAO CONCLUÍDOS COM SUCESSO ---");
-    }
-
-    private static List<Pessoa> obterTodosOsUsuarios(List<Turma> turmas) {
-        return turmas.stream()
-                .flatMap(turma -> turma.getParticipantes().stream())
-                .collect(Collectors.toList());
-    }
-
-    private static void popularDadosIniciais() {
-
-        turmas.clear();
-
-
-        Professor p1 = new Professor("12345678900", "Carlos Pereira", "10/05/1985", "carlos.p@escola.edu", "Rua das Flores, 123", "P001", "Doutorado", "1");
-        Aluno a1 = new Aluno("11122233344", "Beatriz Costa", "20/03/2005", "bia.costa@email.com", "Av. Principal, 456", "A001", "Ciência da Computação", "1");
-        Monitor m1 = new Monitor("44455566677", "Lucas Martins", "28/05/1999", "lucas.m@email.com", "Travessa dos Sonhos, 78", "M001", "Ciência da Computação", "1");
-
-        Turma turmaPrincipal = new Turma(1, "Desenvolvimento de Software 2025", "POO e Java", "01/08/2025", "15/12/2025", null, null);
-        turmaPrincipal.adicionarParticipante(p1);
-        turmaPrincipal.adicionarParticipante(m1);
-
-        turmas.add(turmaPrincipal);
-
     }
 }

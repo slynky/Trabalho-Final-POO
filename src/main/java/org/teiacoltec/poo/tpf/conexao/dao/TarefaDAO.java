@@ -157,4 +157,30 @@ public class TarefaDAO {
         return tarefas;
     }
 
+    public static void lancarNota(int idTarefa, String cpfAluno, float nota) throws SQLException {
+        // Verifica se já existe nota. Se sim, atualiza. Se não, insere.
+        // Maneira simples compatível com MySQL: DELETE antigo e INSERT novo (ou UPDATE direto)
+        // Vamos usar uma lógica simples: Tenta UPDATE, se afetar 0 linhas, faz INSERT.
+
+        String sqlUpdate = "UPDATE Nota_Aluno SET nota_obtida = ? WHERE id_tarefa = ? AND cpf_aluno = ?";
+        String sqlInsert = "INSERT INTO Nota_Aluno (id_tarefa, cpf_aluno, nota_obtida) VALUES (?, ?, ?)";
+
+        try (Connection conn = ConexaoBD.getConnection()) {
+            try (PreparedStatement stmtUpd = conn.prepareStatement(sqlUpdate)) {
+                stmtUpd.setFloat(1, nota);
+                stmtUpd.setInt(2, idTarefa);
+                stmtUpd.setString(3, cpfAluno);
+                int linhas = stmtUpd.executeUpdate();
+
+                if (linhas == 0) { // Não existia nota, vamos inserir
+                    try (PreparedStatement stmtIns = conn.prepareStatement(sqlInsert)) {
+                        stmtIns.setInt(1, idTarefa);
+                        stmtIns.setString(2, cpfAluno);
+                        stmtIns.setFloat(3, nota);
+                        stmtIns.executeUpdate();
+                    }
+                }
+            }
+        }
+    }
 }

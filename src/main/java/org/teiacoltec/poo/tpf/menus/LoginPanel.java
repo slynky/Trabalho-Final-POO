@@ -24,7 +24,7 @@ public class LoginPanel extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel titulo = new JLabel("🎓 Login do Sistema Acadêmico", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Login do Sistema Acadêmico", SwingConstants.CENTER);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 24));
         titulo.setForeground(Color.decode("#2C3E50"));
         gbc.gridwidth = 2;

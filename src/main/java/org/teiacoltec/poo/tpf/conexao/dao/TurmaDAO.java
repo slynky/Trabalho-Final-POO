@@ -287,4 +287,45 @@ public class TurmaDAO {
         }
         return turmas;
     }
+
+    public static List<Turma> listarTurmasPorProfessor(String cpfProfessor) throws SQLException {
+        List<Turma> turmas = new ArrayList<>();
+
+        String sql = "SELECT t.id FROM Turma t " +
+                "JOIN Turma_Participantes tp ON t.id = tp.id_turma " +
+                "WHERE tp.cpf_pessoa = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cpfProfessor);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    obterTurmaPorId(rs.getInt("id")).ifPresent(turmas::add);
+                }
+            }
+        }
+        return turmas;
+    }
+
+    public static List<Turma> listarTurmasPorAluno(String cpfAluno) throws SQLException {
+        List<Turma> turmas = new ArrayList<>();
+        String sql = "SELECT t.id FROM Turma t " +
+                "JOIN Turma_Participantes tp ON t.id = tp.id_turma " +
+                "WHERE tp.cpf_pessoa = ?";
+
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cpfAluno);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    obterTurmaPorId(rs.getInt("id")).ifPresent(turmas::add);
+                }
+            }
+        }
+        return turmas;
+    }
 }

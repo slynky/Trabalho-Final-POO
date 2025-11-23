@@ -101,7 +101,7 @@ public class PainelAssociarAtividade extends JPanel {
                 return;
             }
 
-            // Cria a tarefa (ID 0 pois é novo)
+            // Cria a tarefa
             Tarefa novaTarefa = new Tarefa(0, nome, turmaSel, atvSel, valor);
             TarefaDAO.inserirTarefa(novaTarefa);
 

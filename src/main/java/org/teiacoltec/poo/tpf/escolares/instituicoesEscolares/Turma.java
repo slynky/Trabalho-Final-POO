@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public class Turma {
 
-    protected final int id;
+    protected int id;
     protected String nome;
     protected String desc;
     protected LocalDate inicio;
@@ -74,11 +74,10 @@ public class Turma {
 
 
     // --- Getters e Setters  ---
-
-
     public String getInicio() { return String.valueOf(inicio); }
     public String getFim() { return String.valueOf(fim); }
     public int getId() { return this.id; }
+    public void setId(int id) { this.id = id; }
     public String getNome() { return this.nome; }
     public List<Professor> getProfessoresResponsaveis() {
         return participantes.stream()

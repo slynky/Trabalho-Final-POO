@@ -36,7 +36,7 @@ public class PainelGerenciarTurmas extends JPanel {
         add(lblTitulo, BorderLayout.NORTH);
 
         // --- 2. Tabela de Turmas ---
-        String[] colunas = {"ID", "Nome da Turma", "Início", "Fim", "Descrição"};
+        String[] colunas = {"ID", "Nome da Turma"};
         modeloTabela = new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {

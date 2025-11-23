@@ -80,26 +80,25 @@ public class TurmaDAO {
         }
     }
 
-
     public static void inserirTurma(Turma turma) throws SQLException {
-        String sqlTurma = "INSERT INTO Turma (id, nome, descricao, data_inicio, data_fim, id_turma_pai) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlTurma = "INSERT INTO Turma (nome, descricao, data_inicio, data_fim, id_turma_pai) VALUES (?, ?, ?, ?, ?)";
 
         Connection conn = null;
         try {
             conn = ConexaoBD.getConnection();
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false); // Inicia transação
 
-            try (PreparedStatement stm = conn.prepareStatement(sqlTurma)) {
+            try (PreparedStatement stm = conn.prepareStatement(sqlTurma, Statement.RETURN_GENERATED_KEYS)) {
 
-                stm.setInt(1, turma.getId());
-                stm.setString(2, turma.getNome());
-                stm.setString(3, turma.getDesc());
-                stm.setDate(4, Date.valueOf(turma.getInicio()));
-                stm.setDate(5, Date.valueOf(turma.getFim()));
+                stm.setString(1, turma.getNome());
+                stm.setString(2, turma.getDesc());
+                stm.setDate(3, Date.valueOf(turma.getInicio()));
+                stm.setDate(4, Date.valueOf(turma.getFim()));
+
                 if (turma.getTurmaPai() != null) {
-                    stm.setInt(6, turma.getTurmaPai().getId());
+                    stm.setInt(5, turma.getTurmaPai().getId());
                 } else {
-                    stm.setNull(6, java.sql.Types.INTEGER);
+                    stm.setNull(5, java.sql.Types.INTEGER);
                 }
 
                 int linhasAfetadas = stm.executeUpdate();
@@ -107,19 +106,33 @@ public class TurmaDAO {
                     throw new SQLException("Falha ao inserir turma, nenhuma linha afetada.");
                 }
 
+                try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int novoId = generatedKeys.getInt(1);
+                        turma.setId(novoId); // Atualiza o objeto Java com o ID real do banco
+                        System.out.println("DEBUG: Turma criada com ID: " + novoId);
+                    } else {
+                        throw new SQLException("Falha ao obter o ID da turma inserida.");
+                    }
+                }
+            }
 
-                for (Pessoa p : turma.getParticipantes()) {
-                    PessoaDAO.inserir(p);
-                    inserirParticipante(conn, p.getCpf(), turma.getId());
+            for (Pessoa p : turma.getParticipantes()) {
+                System.out.println("Tentando vincular CPF " + p.getCpf() + " à Turma " + turma.getId());
+
+                if (turma.getId() <= 0) {
+                    throw new SQLException("Erro Crítico: O ID da turma é inválido (" + turma.getId() + "). O vínculo falhará.");
                 }
 
-                conn.commit();
-
-            } catch (SQLException e) {
-                System.err.println("Erro ao inserir Turma. Revertendo processo. Erro: " + e.getMessage());
-                if (conn != null) conn.rollback();
-                throw e;
+                inserirParticipante(conn, p.getCpf(), turma.getId());
             }
+
+            conn.commit();
+
+        } catch (SQLException e) {
+            System.err.println("Erro na transação de inserir Turma: " + e.getMessage());
+            if (conn != null) conn.rollback();
+            throw e;
         } finally {
             if (conn != null) {
                 conn.setAutoCommit(true);

@@ -48,24 +48,28 @@ public class Main {
         inserirPessoaSeguro(a1);
         inserirPessoaSeguro(m1);
 
-        Turma turmaPrincipal = new Turma(1, "Desenvolvimento de Software 2025", "POO e Java", "01/08/2025", "15/12/2025", new ArrayList<>(), null);
+        Turma turmaPrincipal = new Turma(0, "Desenvolvimento de Software 2025", "POO e Java", "01/08/2025", "15/12/2025", new ArrayList<>(), null);
+
         turmaPrincipal.adicionarParticipante(p1);
         turmaPrincipal.adicionarParticipante(a1);
         turmaPrincipal.adicionarParticipante(m1);
-
         turmas.add(turmaPrincipal);
 
         try {
-            if (TurmaDAO.obterTurmaPorId(1).isEmpty()) {
+            if (TurmaDAO.obterTurmaPorId(1).isPresent()) {
+                System.out.println("Turma ID 1 já existe. Usando ela.");
+                turmaPrincipal.setId(1);
+            } else {
                 TurmaDAO.inserirTurma(turmaPrincipal);
-                System.out.println("Turma inserida no banco.");
+                System.out.println("Nova turma criada com ID: " + turmaPrincipal.getId());
             }
 
-            // Vincula Professor e Aluno
-            vincularParticipante(p1.getCpf(), turmaPrincipal.getId());
-            vincularParticipante(a1.getCpf(), turmaPrincipal.getId());
+            int idCorreto = turmaPrincipal.getId();
 
-            vincularParticipante(m1.getCpf(), turmaPrincipal.getId());
+            vincularParticipante(p1.getCpf(), idCorreto);
+            vincularParticipante(a1.getCpf(), idCorreto);
+
+            vincularParticipante(m1.getCpf(), idCorreto);
 
         } catch (SQLException e) {
             System.err.println("Erro ao sincronizar turma com banco: " + e.getMessage());

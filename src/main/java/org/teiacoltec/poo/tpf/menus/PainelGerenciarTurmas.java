@@ -107,12 +107,14 @@ public class PainelGerenciarTurmas extends JPanel {
      * Abre um formulário (JOptionPane) para criar uma turma.
      */
     private void abrirDialogoNovaTurma() {
+        JTextField txId = new JTextField();
         JTextField txtNome = new JTextField();
         JTextField txtDesc = new JTextField();
         JTextField txtInicio = new JTextField(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         JTextField txtFim = new JTextField(LocalDate.now().plusMonths(6).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
         Object[] inputs = {
+                "ID:", txId,
                 "Nome da Turma:", txtNome,
                 "Descrição:", txtDesc,
                 "Data Início (dd/MM/yyyy):", txtInicio,
@@ -122,38 +124,48 @@ public class PainelGerenciarTurmas extends JPanel {
         int result = JOptionPane.showConfirmDialog(this, inputs, "Nova Turma", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
+
+            if (txId.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "O ID da turma é obrigatório.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             if (txtNome.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "O nome da turma é obrigatório.");
+                JOptionPane.showMessageDialog(this, "O nome da turma é obrigatório.", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             try {
-                // Conversão de dados
+
+                int id;
+                try {
+                    id = Integer.parseInt(txId.getText().trim());
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "O ID deve ser um número válido.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 String nome = txtNome.getText().trim();
                 String desc = txtDesc.getText().trim();
-                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                LocalDate dataInicio = LocalDate.parse(txtInicio.getText(), fmt);
-                LocalDate dataFim = LocalDate.parse(txtFim.getText(), fmt);
+                String dataInicio = txtInicio.getText().trim();
+                String dataFim = txtFim.getText().trim();
 
-                // Criar lista de participantes e adicionar O PRÓPRIO PROFESSOR
-                List<Pessoa> participantes = new ArrayList<>();
+                ArrayList<Pessoa> participantes = new ArrayList<>();
                 participantes.add(professor);
 
-                // Instanciar a Turma (ID 0 pois é auto-incremento)
-                //Turma novaTurma = new Turma(0, nome, desc, dataInicio, dataFim, participantes, null);
+                Turma novaTurma = new Turma(id, nome, desc, dataInicio, dataFim, participantes, null);
 
                 // Salvar no Banco
-                //TurmaDAO.inserirTurma(novaTurma);
+                TurmaDAO.inserirTurma(novaTurma);
 
                 JOptionPane.showMessageDialog(this, "Turma criada com sucesso!");
-                atualizarTabela(); // Atualiza a lista
+                atualizarTabela();
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao criar turma (verifique as datas): " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erro ao criar turma: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-
     /**
      * Exclui a turma selecionada na tabela.
      */
